@@ -1,0 +1,13 @@
+{
+  "clientId": "nde-node-001",
+  "dashboardUrl": "https://ndesol.top",
+  "solanaRpcUrl": "https://api.mainnet-beta.solana.com",
+  "publicWalletAddress": "PUBLIC_WALLET_ADDRESS_ONLY",
+  "resourcePolicy": {
+    "maxCpuPercent": 35,
+    "maxGpuPercent": 25,
+    "maxDiskMbps": 10,
+    "allowGpu": true,
+    "allowDiskTasks": true
+  }
+}
