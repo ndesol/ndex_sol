@@ -59,7 +59,8 @@ void ResourceScheduler::executeRound(std::vector<Task>& tasks, int round) {
 }
 
 int ResourceScheduler::cpuBudgetUnits() const {
-    return std::max(1, profile_.cpuThreads * policy_.maxCpuPercent / 10);
+    const int configuredCores = std::min(profile_.cpuThreads, policy_.cpuCoreCount);
+    return std::max(1, configuredCores * policy_.maxCpuPercent / 10);
 }
 
 int ResourceScheduler::gpuBudgetUnits() const {
@@ -70,7 +71,10 @@ int ResourceScheduler::gpuBudgetUnits() const {
 }
 
 int ResourceScheduler::diskBudgetUnits() const {
-    return std::min(profile_.estimatedDiskMbps, policy_.maxDiskMbps) / 2;
+    const int throughputUnits = std::min(profile_.estimatedDiskMbps, policy_.maxDiskMbps) / 2;
+    const int capacityUnits = policy_.maxDiskGb * 2;
+    const int memoryUnits = std::max(1, policy_.memoryMb / 512);
+    return std::min({throughputUnits, capacityUnits, memoryUnits});
 }
 
 } // namespace nde

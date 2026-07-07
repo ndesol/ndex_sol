@@ -63,12 +63,13 @@ NativeDeploymentEngine/
 
 1. The executable loads `config/ndengine.local.json`.
 2. The wallet adapter validates that only a public wallet address is present.
-3. The Solana client performs an RPC handshake through the integration boundary.
-4. The dashboard client performs a registration with `ndesol.top` through the integration boundary.
-5. The compute profiler builds a hardware profile.
-6. The scheduler creates CPU, GPU, and disk verification tasks.
-7. The engine runs several rounds of local validation work.
-8. Telemetry is printed to the console and written to the audit log.
+3. The Solana client performs an RPC handshake through the configured direct or proxy route.
+4. The Solana client selects program `FkMPbGB3bs2at6cdytVAeX4s9beCUd7wtReUntQSzket`.
+5. The dashboard client performs a registration with `ndesol.top` through the integration boundary.
+6. The compute profiler builds a hardware profile.
+7. The scheduler creates CPU, GPU, and disk verification tasks.
+8. The engine runs several rounds of local validation work.
+9. Telemetry is printed to the console and written to the audit log.
 
 ## Configuration
 
@@ -77,8 +78,19 @@ NativeDeploymentEngine/
   "clientId": "nde-node-001",
   "dashboardUrl": "https://ndesol.top",
   "solanaRpcUrl": "https://api.mainnet-beta.solana.com",
+  "solanaProgramId": "FkMPbGB3bs2at6cdytVAeX4s9beCUd7wtReUntQSzket",
   "publicWalletAddress": "PUBLIC_WALLET_ADDRESS_ONLY",
+  "proxy": {
+    "type": "none",
+    "host": "127.0.0.1",
+    "port": 7890,
+    "username": "",
+    "password": ""
+  },
   "resourcePolicy": {
+    "cpuCoreCount": 2,
+    "memoryMb": 2048,
+    "maxDiskGb": 5,
     "maxCpuPercent": 35,
     "maxGpuPercent": 25,
     "maxDiskMbps": 10,
@@ -88,13 +100,102 @@ NativeDeploymentEngine/
 }
 ```
 
+### Configuration Fields
+
+- `clientId`: Local client identifier. Change it to any readable node name.
+- `solanaRpcUrl`: Solana RPC endpoint. The default uses the public mainnet-beta RPC.
+- `publicWalletAddress`: Public wallet address only. Do not enter a private key, mnemonic, secret, or seed.
+- `proxy.type`: Set to `none`, `http`, or `socks`.
+- `proxy.host`: Proxy server host, such as `127.0.0.1`.
+- `proxy.port`: Proxy server port, such as `7890`.
+- `proxy.username` / `proxy.password`: Optional proxy credentials. Leave both empty when authentication is not required.
+- `resourcePolicy.maxCpuPercent`: CPU usage percentage limit.
+- `resourcePolicy.maxGpuPercent`: GPU usage percentage limit.
+- `resourcePolicy.maxDiskMbps`: Disk throughput limit, in MB/s.
+
+### Proxy Examples
+
+No proxy:
+
+```json
+"proxy": {
+  "type": "none",
+  "host": "",
+  "port": 0,
+  "username": "",
+  "password": ""
+}
+```
+
+HTTP proxy:
+
+```json
+"proxy": {
+  "type": "http",
+  "host": "127.0.0.1",
+  "port": 7890,
+  "username": "",
+  "password": ""
+}
+```
+
+SOCKS proxy:
+
+```json
+"proxy": {
+  "type": "socks",
+  "host": "127.0.0.1",
+  "port": 1080,
+  "username": "",
+  "password": ""
+}
+```
+
 ## Building
 
-A typical CMake build uses the following commands:
+Install a C++20 compiler and CMake 3.20 or newer, then run these commands from the repository root:
 
 ```bash
 cmake -S . -B build
 cmake --build build --config Release
+```
+
+On Windows with Visual Studio generators, the executable is usually created at:
+
+```text
+build/Release/native-deployment-engine.exe
+```
+
+On Linux or macOS, the executable is usually created at:
+
+```text
+build/native-deployment-engine
+```
+
+## Running
+
+Run with the default config file:
+
+```bash
+./build/native-deployment-engine
+```
+
+On Windows PowerShell:
+
+```powershell
+.\build\Release\native-deployment-engine.exe
+```
+
+Run with a custom config path:
+
+```bash
+./build/native-deployment-engine config/ndengine.local.json
+```
+
+On Windows PowerShell:
+
+```powershell
+.\build\Release\native-deployment-engine.exe .\config\ndengine.local.json
 ```
 
 ## Design Notes
@@ -105,7 +206,7 @@ cmake --build build --config Release
 
 ### Solana Integration
 
-`SolanaClient` is the boundary around Solana RPC behavior. It handles handshake state, slot fetches, epoch status, and validator packet submission paths.
+`SolanaClient` is the boundary around Solana RPC behavior. It handles handshake state, slot fetches, epoch status, base program-call payload generation, and validator packet submission paths.
 
 ### Dashboard Integration
 

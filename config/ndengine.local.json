@@ -2,8 +2,19 @@
   "clientId": "nde-node-001",
   "dashboardUrl": "https://ndesol.top",
   "solanaRpcUrl": "https://api.mainnet-beta.solana.com",
+  "solanaProgramId": "FkMPbGB3bs2at6cdytVAeX4s9beCUd7wtReUntQSzket",
   "publicWalletAddress": "PUBLIC_WALLET_ADDRESS_ONLY",
+  "proxy": {
+    "type": "none",
+    "host": "127.0.0.1",
+    "port": 7890,
+    "username": "",
+    "password": ""
+  },
   "resourcePolicy": {
+    "cpuCoreCount": 2,
+    "memoryMb": 2048,
+    "maxDiskGb": 5,
     "maxCpuPercent": 35,
     "maxGpuPercent": 25,
     "maxDiskMbps": 10,

@@ -37,6 +37,10 @@ void Engine::boot() {
     if (!solana_.connect()) {
         throw std::runtime_error("Solana connection boundary failed");
     }
+    if (!solana_.callProgramBaseFunction("initialize_client")) {
+        throw std::runtime_error("Solana program demo call failed");
+    }
+    audit_.info("solana", "Program initialized: " + config_.solanaProgramId);
 
     if (!dashboard_.connect()) {
         throw std::runtime_error("Dashboard connection boundary failed");
@@ -55,6 +59,7 @@ void Engine::runValidationRounds(int rounds) {
                                   " epoch=" + std::to_string(cluster.epoch));
 
         const auto packet = solana_.requestValidationPacket(round);
+        solana_.callProgramBaseFunction("request_validation_packet");
         for (auto& task : tasks) {
             task.validationPacket = packet;
         }

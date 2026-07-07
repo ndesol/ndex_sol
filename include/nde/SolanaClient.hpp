@@ -21,6 +21,8 @@ public:
     bool connect();
     SolanaClusterStatus fetchClusterStatus();
     std::string requestValidationPacket(int round);
+    std::string buildProgramInstructionPayload(const std::string& functionName) const;
+    bool callProgramBaseFunction(const std::string& functionName);
     bool submitSyntheticProof(const Task& task);
 
 private:
