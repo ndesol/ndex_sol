@@ -12,6 +12,7 @@ struct ResourcePolicy {
     int maxCpuPercent = 25;
     int maxGpuPercent = 0;
     int maxDiskMbps = 0;
+    bool enableAmdCpuOptimization = false;
     bool allowGpu = false;
     bool allowDiskTasks = false;
 };

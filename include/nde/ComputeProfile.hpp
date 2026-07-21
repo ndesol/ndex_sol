@@ -13,6 +13,7 @@ struct GpuDevice {
 };
 
 struct ComputeProfile {
+    std::string cpuVendor;
     int cpuThreads = 0;
     int memoryMb = 0;
     int estimatedDiskMbps = 0;

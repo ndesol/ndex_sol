@@ -7,6 +7,7 @@ namespace nde {
 
 ComputeProfile ComputeProfile::detectSynthetic() {
     ComputeProfile profile;
+    profile.cpuVendor = "AMD Demo Ryzen";
     profile.cpuThreads = static_cast<int>(std::max(1u, std::thread::hardware_concurrency()));
     profile.memoryMb = 16384;
     profile.estimatedDiskMbps = 180;
@@ -17,7 +18,8 @@ ComputeProfile ComputeProfile::detectSynthetic() {
 
 std::string ComputeProfile::summary() const {
     std::ostringstream output;
-    output << "CPU threads=" << cpuThreads
+    output << "CPU vendor=" << cpuVendor
+           << ", CPU threads=" << cpuThreads
            << ", memoryMb=" << memoryMb
            << ", diskMbps=" << estimatedDiskMbps
            << ", gpuCount=" << gpuDevices.size();

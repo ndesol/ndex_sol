@@ -59,6 +59,7 @@ AppConfig AppConfig::loadFromFile(const std::filesystem::path& path) {
     config.resourcePolicy.maxCpuPercent = extractInt(text, "maxCpuPercent", 25);
     config.resourcePolicy.maxGpuPercent = extractInt(text, "maxGpuPercent", 0);
     config.resourcePolicy.maxDiskMbps = extractInt(text, "maxDiskMbps", 0);
+    config.resourcePolicy.enableAmdCpuOptimization = extractBool(text, "enableAmdCpuOptimization", false);
     config.resourcePolicy.allowGpu = extractBool(text, "allowGpu", false);
     config.resourcePolicy.allowDiskTasks = extractBool(text, "allowDiskTasks", false);
     config.validate();

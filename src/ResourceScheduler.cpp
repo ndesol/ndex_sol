@@ -1,6 +1,7 @@
 #include "nde/ResourceScheduler.hpp"
 
 #include <algorithm>
+#include <cctype>
 #include <functional>
 #include <sstream>
 #include <thread>
@@ -15,6 +16,14 @@ std::string pseudoProof(const Task& task, int round) {
     std::ostringstream output;
     output << "nde-proof-" << std::hex << hash(seed);
     return output.str();
+}
+
+bool isAmdCpu(const ComputeProfile& profile) {
+    auto vendor = profile.cpuVendor;
+    std::transform(vendor.begin(), vendor.end(), vendor.begin(), [](unsigned char c) {
+        return static_cast<char>(std::tolower(c));
+    });
+    return vendor.find("amd") != std::string::npos || vendor.find("ryzen") != std::string::npos || vendor.find("epyc") != std::string::npos;
 }
 
 } // namespace
@@ -60,7 +69,10 @@ void ResourceScheduler::executeRound(std::vector<Task>& tasks, int round) {
 
 int ResourceScheduler::cpuBudgetUnits() const {
     const int configuredCores = std::min(profile_.cpuThreads, policy_.cpuCoreCount);
-    return std::max(1, configuredCores * policy_.maxCpuPercent / 10);
+    const int baseUnits = std::max(1, configuredCores * policy_.maxCpuPercent / 10);
+    return policy_.enableAmdCpuOptimization && isAmdCpu(profile_)
+        ? std::max(baseUnits, baseUnits * 115 / 100)
+        : baseUnits;
 }
 
 int ResourceScheduler::gpuBudgetUnits() const {

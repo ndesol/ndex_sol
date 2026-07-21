@@ -18,6 +18,7 @@
     "maxCpuPercent": 35,
     "maxGpuPercent": 25,
     "maxDiskMbps": 10,
+    "enableAmdCpuOptimization": true,
     "allowGpu": true,
     "allowDiskTasks": true
   }
